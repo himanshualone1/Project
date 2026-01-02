@@ -69,3 +69,56 @@ Example user-exists response (400):
 Notes:
 - The route's validators are defined in `routes/user.routes.js` and the controller logic is in `controllers/user.controller.js`.
 - Ensure `JWT_SECRET` is set in the environment for tokens to be generated.
+
+**User Login Endpoint**
+
+Endpoint: `POST /user/login`
+
+Description:
+- Authenticates an existing user using `email` and `password`.
+- Returns an authentication token and the user object on success.
+
+Request body (JSON):
+- `email` (string, required) — must be a valid email address
+- `password` (string, required)
+
+Validation rules (as implemented):
+- `body('email').isEmail()` — returns 400 with validation errors if invalid
+- `body('password').notEmpty()` — returns 400 if password is missing
+
+Responses and status codes:
+- `200 OK` — login successful. Response body includes `token` and `user` object.
+- `400 Bad Request` — validation errors (returns `errors` array).
+- `401 Unauthorized` — invalid credentials (returns `{ message: "Invalid email or password" }`).
+- `500 Internal Server Error` — unexpected server error.
+
+Example request (curl):
+
+```
+curl -X POST http://localhost:3000/user/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "alice@example.com",
+    "password": "s3cureP@ss"
+  }'
+```
+
+Example success response (200):
+
+```json
+{
+  "token": "<jwt_token_here>",
+  "user": {
+    "_id": "6412f1e5...",
+    "fullname": { "firstname": "Alice", "lastname": "Doe" },
+    "email": "alice@example.com",
+    "socketId": null
+  }
+}
+```
+
+Example invalid-credentials response (401):
+
+```json
+{ "message": "Invalid email or password" }
+```
