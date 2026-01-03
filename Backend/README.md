@@ -122,3 +122,44 @@ Example invalid-credentials response (401):
 ```json
 { "message": "Invalid email or password" }
 ```
+
+## GET /user/profile
+
+Description:
+- Returns the authenticated user's profile object.
+
+Authentication:
+- Requires `authMiddleware`.
+- Provide the JWT either in a cookie named `token` (used by this app) or in the `Authorization` header as `Bearer <token>`.
+
+Responses and status codes:
+- `200 OK` — returns the authenticated user object (JSON).
+- `401 Unauthorized` — when token is missing, invalid, or expired.
+
+Example success response (200):
+
+```json
+{
+  "_id": "6412f1e5...",
+  "fullname": { "firstname": "Alice", "lastname": "Doe" },
+  "email": "alice@example.com",
+  "socketId": null
+}
+```
+
+---
+
+## GET /user/logout
+
+Description:
+- Logs the user out by removing the `token` cookie (sets it to expired) and adding the token to a blacklist so it cannot be reused.
+
+Authentication:
+- Requires `authMiddleware`. The token to blacklist is read from the cookie or the `Authorization` header.
+
+Responses and status codes:
+- `200 OK` — logout successful. Response body: `{ "message": "Logged out successfully" }`.
+- `401 Unauthorized` — when token is missing or invalid.
+
+Notes:
+- The logout implementation stores blacklisted tokens in `models/blacklistToken.model.js`. Ensure the blacklist is consulted during auth checks if relying on token invalidation.
