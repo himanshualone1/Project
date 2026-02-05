@@ -1,4 +1,8 @@
-# User Registration Endpoint
+# API Documentation
+
+## User Endpoints
+
+### User Registration Endpoint
 
 Endpoint: `POST /user/register`
 
@@ -72,7 +76,7 @@ Notes:
 
 **User Login Endpoint**
 
-Endpoint: `POST /user/login`
+### POST /user/login
 
 Description:
 - Authenticates an existing user using `email` and `password`.
@@ -163,3 +167,110 @@ Responses and status codes:
 
 Notes:
 - The logout implementation stores blacklisted tokens in `models/blacklistToken.model.js`. Ensure the blacklist is consulted during auth checks if relying on token invalidation.
+
+---
+
+## Captain Endpoints
+
+### Captain Registration Endpoint
+
+Endpoint: `POST /captain/register`
+
+Description:
+- Registers a new captain with `fullname`, `email`, `password`, `vehicle`, and `location`.
+- Validates input and returns an authentication token and created captain on success.
+
+Request body (JSON):
+- `fullname` (object):
+  - `firstname` (string, required) — minimum 3 characters
+  - `lastname` (string, optional)
+- `email` (string, required) — must be a valid email address
+- `password` (string, required) — minimum 6 characters
+- `vehicle` (object):
+  - `color` (string, required) — minimum 3 characters
+  - `plate` (string, required) — minimum 3 characters
+  - `capacity` (number, required) — minimum 1
+  - `vehicleType` (string, required) — must be "Car", "Motorcycle", or "Auto"
+- `location` (object) — coordinates for captain's current location
+
+Responses and status codes:
+- `201 Created` — captain created successfully. Response body includes `token` and `captain` object.
+- `400 Bad Request` — validation errors or if captain already exists.
+- `500 Internal Server Error` — unexpected server error.
+
+Example request (curl):
+
+```
+curl -X POST http://localhost:3000/captain/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": { "firstname": "John", "lastname": "Smith" },
+    "email": "john@example.com",
+    "password": "s3cureP@ss",
+    "vehicle": { "color": "Black", "plate": "ABC123", "capacity": 4, "vehicleType": "Car" },
+    "location": { "lat": 0, "lng": 0 }
+  }'
+```
+
+---
+
+### Captain Login Endpoint
+
+Endpoint: `POST /captain/login`
+
+Description:
+- Authenticates an existing captain using `email` and `password`.
+- Returns an authentication token and the captain object on success.
+
+Request body (JSON):
+- `email` (string, required) — must be a valid email address
+- `password` (string, required) — minimum 6 characters
+
+Responses and status codes:
+- `200 OK` — login successful. Response body includes `token` and `captain` object.
+- `400 Bad Request` — validation errors.
+- `401 Unauthorized` — invalid credentials.
+- `500 Internal Server Error` — unexpected server error.
+
+Example request (curl):
+
+```
+curl -X POST http://localhost:3000/captain/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "s3cureP@ss"
+  }'
+```
+
+---
+
+### GET /captain/profile
+
+Description:
+- Returns the authenticated captain's profile object.
+
+Authentication:
+- Requires `authMiddleware.authCaptain`.
+- Provide the JWT either in a cookie named `token` or in the `Authorization` header as `Bearer <token>`.
+
+Responses and status codes:
+- `200 OK` — returns the authenticated captain object (JSON).
+- `401 Unauthorized` — when token is missing, invalid, or expired.
+
+---
+
+### GET /captain/logout
+
+Description:
+- Logs the captain out by removing the `token` cookie and adding the token to a blacklist.
+
+Authentication:
+- Requires `authMiddleware.authCaptain`.
+
+Responses and status codes:
+- `200 OK` — logout successful. Response body: `{ "message": "Logged out successfully" }`.
+- `401 Unauthorized` — when token is missing or invalid.
+
+Notes:
+- The logout implementation stores blacklisted tokens in `models/blacklistToken.model.js`.
