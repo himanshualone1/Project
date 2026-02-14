@@ -5,6 +5,7 @@ import "remixicon/fonts/remixicon.css";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/vehiclePanel";
 import ConfirmRide from "../components/ConfirmRide";
+import LookingForDriver from "../components/LookingForDriver";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -16,12 +17,45 @@ const Home = () => {
   const panelCloseRef = useRef(null);
   const logoRef = useRef(null);
   const vehiclePanelRef = useRef(null);
+  const vehiclefoundRef = useRef(null);
+  const waitingForDriverRef = useRef(null);
   const [vehiclePanel, setVehiclePanel] = useState(false);
   const [confirmRidePanel, setConfirmRidePanel] = useState(false);
-
+  const [vehicleFound, setVehicleFound] = useState(false);
+  const [waitingForDriver, setWaitingForDriver] = useState(false);
   const submitHandler = (e) => {
     e.preventDefault();
   };
+  useGSAP(() => {
+    if (vehicleFound) {
+      gsap.to(vehiclefoundRef.current, {
+        y: 0,
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    } else {
+      gsap.to(vehiclefoundRef.current, {
+        y: "100%",
+        duration: 0.4,
+        ease: "power3.in",
+      });
+    }
+  }, [vehicleFound]);
+  useGSAP(() => {
+    if (waitingForDriver) {
+      gsap.to(waitingForDriverRef.current, {
+        y: 0,
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    } else {
+      gsap.to(waitingForDriverRef.current, {
+        y: "100%",
+        duration: 0.4,
+        ease: "power3.in",
+      });
+    }
+  }, [waitingForDriver]);
 
   useGSAP(() => {
     if (panelOpen) {
@@ -96,6 +130,20 @@ const Home = () => {
       });
     }
   }, [confirmRidePanel]);
+  useGSAP(
+    function () {
+      if (waitingForDriver) {
+        gsap.to(waitingForDriverRef.current, {
+          transform: "translateY(0)",
+        });
+      } else {
+        gsap.to(waitingForDriverRef.current, {
+          transform: "translateY(100%)",
+        });
+      }
+    },
+    [waitingForDriver],
+  );
 
   return (
     <div className="h-screen w-screen relative overflow-hidden bg-gray-900">
@@ -221,7 +269,27 @@ const Home = () => {
         ref={confirmRidePanelRef}
         className="fixed w-full z-10 bottom-0 bg-white px-3 py-6 pt-12 pb-3 translate-y-full"
       >
-        <ConfirmRide />
+        <ConfirmRide
+          setConfirmRidePanel={setConfirmRidePanel}
+          setVehicleFound={setVehicleFound}
+        />
+      </div>
+      {/* wait for Driver Panel */}
+      <div
+        ref={vehiclefoundRef}
+        className="fixed w-full z-10 bottom-0 bg-white px-3 pt-12 pb-3 translate-y-full"
+      >
+        <LookingForDriver
+          setVehiclePanel={setVehiclePanel}
+          setVehicleFound={setVehicleFound}
+          setConfirmRidePanel={setConfirmRidePanel}
+        />
+      </div>
+      <div
+        ref={waitingForDriverRef}
+        className="fixed w-full z-10 bottom-0 bg-white px-3 pt-12 pb-3"
+      >
+        <waitingForDriver waitingForDriver={waitingForDriver} />
       </div>
     </div>
   );
