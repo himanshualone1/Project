@@ -9,10 +9,6 @@ import UserSignup from "./pages/UserSignup";
 import Home from "./pages/Home";
 import UserLogout from "./pages/UserLogout";
 import CaptainLogout from "./pages/CaptainLogout";
-import Riding from "./pages/Riding";
-import CaptainHome from "./pages/CaptainDashboard";
-import CaptainDashboard from "./pages/CaptainDashboard";
-import CaptainRiding from "./pages/CaptainRiding";
 
 const App = () => {
   return (
@@ -29,13 +25,9 @@ const App = () => {
       <Route path="/login" element={<UserLogin />} />
       <Route path="/signup" element={<UserSignup />} />
       <Route path="/logout" element={<UserLogout />} />
-      <Route path="/riding" element={<Riding />} />
 
       {/* Home */}
       <Route path="/home" element={<Home />} />
-       <Route path="/captain-dashboard" element={<CaptainDashboard />} />
-       <Route path="/captain-riding" element={<CaptainRiding />} /> 
-      
     </Routes>
   );
 };
