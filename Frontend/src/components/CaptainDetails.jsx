@@ -1,4 +1,5 @@
-import React from "react";
+import React  from "react";
+
 
 const CaptainDetails = () => {
   return (
@@ -13,7 +14,7 @@ const CaptainDetails = () => {
             alt="profile"
           />
           <h2 className="text-lg font-semibold text-gray-900">
-            Harsh Patel
+            Himanshu Alone
           </h2>
         </div>
 
